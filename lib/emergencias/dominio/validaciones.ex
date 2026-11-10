@@ -68,6 +68,12 @@ defmodule Emergencias.Dominio.Validaciones do
     end
   end
 
+  @doc "Como `entero_no_negativo/1`, pero `nil` (dato omitido) devuelve el valor por defecto."
+  @spec entero_no_negativo_o(term(), non_neg_integer()) ::
+          {:ok, non_neg_integer()} | {:error, :cantidad_invalida}
+  def entero_no_negativo_o(nil, defecto), do: {:ok, defecto}
+  def entero_no_negativo_o(valor, _defecto), do: entero_no_negativo(valor)
+
   @spec texto_no_vacio(term()) :: {:ok, String.t()} | {:error, :texto_vacio}
   def texto_no_vacio(valor) when is_binary(valor) do
     case String.trim(valor) do
