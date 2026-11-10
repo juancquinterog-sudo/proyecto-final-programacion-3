@@ -18,8 +18,11 @@ defmodule Emergencias.Persistencia.Almacen do
   | albergues.txt      | albergues y ocupantes                       |
   | actividad.log      | bitácora de actividad por usuario           |
 
-  Lectura: directa (`File.stream!` + `Codec`). Escritura: SIEMPRE vía `Escritor`.
+  Lectura: directa (`File.read` + `Codec`). Escritura: SIEMPRE vía `Escritor`.
+  Si el archivo no existe, `cargar/1` devuelve `{:ok, []}` (primera ejecución).
   """
+
+  alias Emergencias.Persistencia.{Codec, Escritor}
 
   @entidades ~w(usuarios zonas necesidades recursos movimientos personas mensajes mascotas albergues)a
 
@@ -32,13 +35,40 @@ defmodule Emergencias.Persistencia.Almacen do
 
   @doc "Lee todos los registros de una entidad como structs. `{:ok, lista} | {:error, razon}`."
   @spec cargar(atom()) :: {:ok, [term()]} | {:error, term()}
-  def cargar(_entidad), do: {:error, :no_implementado}
+  def cargar(entidad) when entidad in @entidades do
+    case File.read(ruta(entidad)) do
+      {:ok, contenido} ->
+        lineas =
+          contenido
+          |> String.split(["\r\n", "\n"])
+          |> Enum.reject(fn linea -> String.trim(linea) == "" end)
+
+        Codec.de_lineas(entidad, lineas)
+
+      {:error, :enoent} ->
+        {:ok, []}
+
+      {:error, razon} ->
+        {:error, razon}
+    end
+  end
+
+  def cargar(_entidad), do: {:error, :entidad_desconocida}
 
   @doc "Reemplaza el archivo completo con los registros dados."
   @spec guardar(atom(), [term()]) :: :ok | {:error, term()}
-  def guardar(_entidad, _registros), do: {:error, :no_implementado}
+  def guardar(entidad, registros) when entidad in @entidades and is_list(registros) do
+    lineas = Enum.flat_map(registros, &Codec.a_lineas/1)
+    Escritor.reemplazar(ruta(entidad), lineas)
+  end
 
-  @doc "Agrega un registro al final del archivo."
+  def guardar(_entidad, _registros), do: {:error, :entidad_desconocida}
+
+  @doc "Agrega un registro al final del archivo (no usar para `:zonas`; allí usar `guardar/2`)."
   @spec agregar(atom(), term()) :: :ok | {:error, term()}
-  def agregar(_entidad, _registro), do: {:error, :no_implementado}
+  def agregar(entidad, registro) when entidad in @entidades and entidad != :zonas do
+    Escritor.anexar(ruta(entidad), registro |> Codec.a_lineas() |> Enum.join("\n"))
+  end
+
+  def agregar(_entidad, _registro), do: {:error, :entidad_desconocida}
 end
