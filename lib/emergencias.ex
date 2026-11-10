@@ -4,7 +4,7 @@ defmodule Emergencias do
   (contexto: atención posterior a un terremoto).
 
   Punto de entrada único para la capa de presentación: recibe una sesión y una
-  línea de comando, y devuelve `{:ok, mensaje}` o `{:error, razon}`.
+  línea de comando, y devuelve la nueva sesión con un mensaje, o un error.
 
   Arquitectura por capas (de arriba hacia abajo):
 
@@ -19,11 +19,16 @@ defmodule Emergencias do
 
   alias Emergencias.Cli.{Comandos, Parser, Sesion}
 
-  @doc "Ejecuta una línea de comando en nombre de una sesión."
-  @spec ejecutar(Sesion.t(), String.t()) :: {:ok, term()} | {:error, term()}
-  def ejecutar(%Sesion{} = _sesion, linea) when is_binary(linea) do
-    # TODO: con {:ok, comando} <- Parser.parsear(linea), do: Comandos.ejecutar(sesion, comando)
-    _ = {Parser, Comandos}
-    {:error, :no_implementado}
+  @doc """
+  Ejecuta una línea de comando en nombre de una sesión.
+
+      sesion = Emergencias.Cli.Sesion.anonima()
+      {:ok, sesion, mensaje} = Emergencias.ejecutar(sesion, "connect laura 1234 coordinador centro")
+  """
+  @spec ejecutar(Sesion.t(), String.t()) :: {:ok, Sesion.t(), String.t()} | {:error, term()}
+  def ejecutar(%Sesion{} = sesion, linea) when is_binary(linea) do
+    with {:ok, comando} <- Parser.parsear(linea) do
+      Comandos.ejecutar(sesion, comando)
+    end
   end
 end
