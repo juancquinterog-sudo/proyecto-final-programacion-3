@@ -1,6 +1,8 @@
 defmodule Emergencias.Cli.Formato do
   @moduledoc "Presentación: convierte errores y listas en texto legible. Funciones puras."
 
+  alias Emergencias.Dominio.{Necesidad, Zona}
+
   @doc "Mensaje legible para un error. Los desconocidos se muestran con `inspect/1`."
   @spec error(term()) :: String.t()
   def error({:uso, uso}), do: "Uso: #{uso}"
@@ -25,7 +27,62 @@ defmodule Emergencias.Cli.Formato do
   def error(:zona_requerida), do: "Error: debes indicar la zona principal."
   def error(:texto_vacio), do: "Error: falta un dato obligatorio."
   def error(:cantidad_invalida), do: "Error: la cantidad debe ser un número entero válido."
+  def error(:no_existe), do: "Error: no se encontró el registro solicitado."
+  def error(:id_duplicado), do: "Error: ya existe un registro con ese código."
+  def error(:sector_duplicado), do: "Error: la zona ya tiene un sector con ese código."
+  def error(:sector_no_existe), do: "Error: el sector no existe en esa zona."
+  def error(:punto_duplicado), do: "Error: ya existe un punto de atención con ese código."
+
+  def error(:tipo_invalido),
+    do:
+      "Error: tipo inválido (agua, alimentos, medicamentos, primeros_auxilios, refugio, transporte, rescate u otra)."
+
+  def error(:prioridad_invalida), do: "Error: prioridad inválida (critica, alta, media o baja)."
+  def error(:nivel_invalido), do: "Error: nivel inválido (critico, alto, medio o bajo)."
+  def error(:estado_invalido), do: "Error: estado inválido."
+  def error(:necesidad_cerrada), do: "Error: la necesidad ya está cerrada (atendida o cancelada)."
+  def error(:transicion_invalida), do: "Error: ese cambio de estado no es válido."
+  def error(:excede_requerido), do: "Error: la cantidad excede lo que falta por cubrir."
   def error(otro), do: "Error: #{inspect(otro)}"
+
+  @doc "Tabla de necesidades (ya ordenadas por quien llama)."
+  @spec necesidades([Necesidad.t()]) :: String.t()
+  def necesidades(lista) do
+    filas =
+      Enum.map(lista, fn n ->
+        [n.id, n.tipo, n.cantidad, n.cantidad_asignada, n.prioridad, n.zona, n.estado, n.descripcion || ""]
+      end)
+
+    tabla(["id", "tipo", "cant", "asig", "prioridad", "zona", "estado", "descripcion"], filas)
+  end
+
+  @doc "Estado general de una zona (ver `Servicios.Resumen.estado_zona/1`)."
+  @spec estado_zona(map()) :: String.t()
+  def estado_zona(%{zona: zona, estadisticas: est, necesidades: necesidades}) do
+    pendientes = Enum.count(necesidades, &Necesidad.pendiente?/1)
+
+    niveles =
+      case est.por_nivel |> Enum.sort() |> Enum.map_join(", ", fn {nivel, n} -> "#{nivel}: #{n}" end) do
+        "" -> "-"
+        texto -> texto
+      end
+
+    cabecera = [
+      "Zona #{zona.codigo} - #{zona.nombre} (nivel #{zona.nivel})",
+      "Personas afectadas (total): #{est.total_afectados}",
+      "Sectores: #{est.sectores} | Puntos de atención: #{est.puntos}",
+      "Sectores por nivel: #{niveles}",
+      "Necesidades: #{length(necesidades)} registradas, #{pendientes} pendientes"
+    ]
+
+    sectores =
+      tabla(
+        ["sector", "nombre", "nivel", "afectados"],
+        Enum.map(zona.sectores, fn s -> [s.codigo, s.nombre, s.nivel, Zona.total_afectados(s)] end)
+      )
+
+    Enum.join(cabecera ++ ["", sectores], "\n")
+  end
 
   @doc """
   Tabla de texto con columnas alineadas.

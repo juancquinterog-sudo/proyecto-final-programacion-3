@@ -19,6 +19,6 @@ defmodule Emergencias.Supervisores.Servidores do
       Emergencias.Servidores.MascotaServer
     ]
 
-    Supervisor.init(children, strategy: :one_for_one)
+    Supervisor.init(children, strategy: :one_for_one, max_restarts: 10, max_seconds: 5)
   end
 end

@@ -66,7 +66,9 @@ defmodule Emergencias.Cli.ComandosTest do
 
     {_n, coordinador} = conectar("coordinador")
     # permitido, pero implementado en una fase posterior
-    assert Comandos.ejecutar(coordinador, {:register_zone, [], []}) == {:error, :no_implementado}
+    assert Comandos.ejecutar(coordinador, {:summary, [], []}) == {:error, :no_implementado}
+    # permitido y con argumentos faltantes: muestra el uso
+    assert {:error, {:uso, _}} = Comandos.ejecutar(coordinador, {:register_zone, [], []})
   end
 
   test "disconnect cierra la sesión" do

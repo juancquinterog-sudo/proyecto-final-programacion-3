@@ -20,7 +20,7 @@ defmodule Emergencias.Cli.Parser do
                register_resource list_resources transfer_resource report_person find_person
                send_family_message list_family_messages report_pet match_pets register_shelter
                check_shelter register_entry register_exit summary critical_resources
-               pending_needs help exit)a
+               pending_needs help exit register_sector register_point list_zones zone_status)a
 
   @opciones %{
     "zona" => :zona,

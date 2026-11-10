@@ -91,6 +91,22 @@ defmodule Emergencias.Dominio.NecesidadTest do
     end
   end
 
+  describe "pendiente?/1" do
+    test "pendiente, o con faltante mientras no esté cerrada" do
+      {:ok, n} = Necesidad.nueva(@datos)
+      assert Necesidad.pendiente?(n)
+
+      {:ok, parcial} = Necesidad.registrar_asignacion(n, {"R001", "c", 10})
+      assert Necesidad.pendiente?(parcial)
+
+      {:ok, completa} = Necesidad.registrar_asignacion(n, {"R001", "c", 30})
+      refute Necesidad.pendiente?(completa)
+
+      {:ok, cancelada} = Necesidad.cambiar_estado(n, :cancelada)
+      refute Necesidad.pendiente?(cancelada)
+    end
+  end
+
   describe "prioridad (recursivas)" do
     test "insertar_por_prioridad mantiene el orden critica > alta > media > baja" do
       lista =

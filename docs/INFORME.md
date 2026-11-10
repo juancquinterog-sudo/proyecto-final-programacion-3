@@ -78,11 +78,17 @@ Ver PDF del curso. Resumen: plataforma multiusuario y concurrente, en Elixir, pa
 
 ### 1.5 Comandos del sistema
 
+Los comandos marcados *(añadido)* no están en la lista de referencia del PDF; se agregaron para cubrir requisitos que el enunciado pide (registrar sectores y puntos de atención, consultar el estado de una zona). El PDF permite modificar los nombres siempre que se conserve la funcionalidad.
+
 | Comando | Rol mínimo | Destino |
 |---------|-----------|---------|
 | `connect usuario contraseña tipo zona` | todos | UsuarioServer |
 | `disconnect` | todos | UsuarioServer |
-| `register_zone codigo nombre nivel` | coordinador | ZonaServer |
+| `register_zone codigo nombre nivel [personas]` | coordinador | ZonaServer |
+| `register_sector zona codigo nombre [nivel] [personas]` *(añadido)* | coordinador | ZonaServer |
+| `register_point zona sector codigo nombre [personas]` *(añadido)* | coordinador | ZonaServer |
+| `list_zones` *(añadido)* | ciudadano | ZonaServer |
+| `zone_status zona` *(añadido)* | ciudadano | Servicios.Resumen |
 | `register_need tipo cantidad prioridad zona descripcion` | ciudadano | NecesidadServer |
 | `list_needs [zona=.. prioridad=.. tipo=.. estado=..]` | ciudadano | NecesidadServer |
 | `assign_resource need recurso cantidad` | coordinador | Asignador |

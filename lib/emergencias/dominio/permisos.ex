@@ -10,9 +10,9 @@ defmodule Emergencias.Dominio.Permisos do
   |---------------|---------------------------------------------------------------------------|
   | ciudadano     | connect, disconnect, help, exit, register_need, list_needs, pending_needs,|
   |               | report_person, find_person, send_family_message, list_family_messages,    |
-  |               | report_pet, match_pets, check_shelter                                      |
+  |               | report_pet, match_pets, check_shelter, list_zones, zone_status             |
   | voluntario    | list_resources, register_entry, register_exit                              |
-  | coordinador   | register_zone, register_resource, assign_resource, transfer_resource,      |
+  | coordinador   | register_zone, register_sector, register_point, register_resource, assign_resource, transfer_resource,      |
   |               | register_shelter, summary, critical_resources                              |
   | administrador | (todo lo anterior)                                                         |
   """
@@ -39,7 +39,11 @@ defmodule Emergencias.Dominio.Permisos do
     list_resources: :voluntario,
     register_entry: :voluntario,
     register_exit: :voluntario,
+    list_zones: :ciudadano,
+    zone_status: :ciudadano,
     register_zone: :coordinador,
+    register_sector: :coordinador,
+    register_point: :coordinador,
     register_resource: :coordinador,
     assign_resource: :coordinador,
     transfer_resource: :coordinador,

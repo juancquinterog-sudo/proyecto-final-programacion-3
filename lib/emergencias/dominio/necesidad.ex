@@ -119,6 +119,18 @@ defmodule Emergencias.Dominio.Necesidad do
   @spec cubierta?(t()) :: boolean()
   def cubierta?(%__MODULE__{} = necesidad), do: faltante(necesidad) == 0
 
+  @doc """
+  ¿Sigue necesitando atención? Es `true` si está `:pendiente`, o si está
+  `:asignada` / `:en_atencion` pero aún le falta cantidad por cubrir.
+  """
+  @spec pendiente?(t()) :: boolean()
+  def pendiente?(%__MODULE__{estado: :pendiente}), do: true
+
+  def pendiente?(%__MODULE__{estado: estado} = necesidad) when estado in [:asignada, :en_atencion],
+    do: faltante(necesidad) > 0
+
+  def pendiente?(%__MODULE__{}), do: false
+
   ## ---------------- RECURSIVAS ----------------
 
   @doc """
