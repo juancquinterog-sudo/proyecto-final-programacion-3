@@ -1,0 +1,41 @@
+sequenceDiagram
+  autonumber
+  actor L as Laura - coordinadora
+  actor V as Voluntario
+  participant SH as Cli.Shell
+  participant CO as Cli.Comandos
+  participant AS as Servicios.Asignador
+  participant NE as NecesidadServer
+  participant RS as RecursoServer R001
+  participant ES as Escritor
+  participant BI as Bitacora
+
+  Note over RS: existencias centro_acopio_1 = 50 litros
+  par Solicitud de Laura
+    L->>SH: assign_resource N001 agua 30
+    SH->>CO: ejecutar
+    CO->>AS: asignar N001 agua 30
+    AS->>NE: obtener N001
+    NE-->>AS: pendiente, faltante 30
+    AS->>RS: reservar 30
+  and Solicitud del voluntario
+    V->>SH: assign_resource N002 agua 25
+    SH->>CO: ejecutar
+    CO->>AS: asignar N002 agua 25
+    AS->>NE: obtener N002
+    NE-->>AS: pendiente, faltante 25
+    AS->>RS: reservar 25
+  end
+  Note over RS: el buzon serializa las dos llamadas
+  RS->>RS: 50 - 30 = 20, aceptada
+  RS->>ES: anexar movimiento y existencias
+  RS-->>AS: ok, quedan 20
+  AS->>NE: registrar_asignacion N001, 30
+  NE-->>AS: ok, estado asignada
+  AS-->>CO: ok
+  CO->>BI: registrar actividad
+  CO-->>L: Asignados 30 litros a N001
+  RS->>RS: 25 mayor que 20, rechazada
+  RS-->>AS: error stock_insuficiente
+  AS-->>CO: error stock_insuficiente
+  CO-->>V: Error stock insuficiente, quedan 20

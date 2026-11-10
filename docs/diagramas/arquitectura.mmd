@@ -1,0 +1,46 @@
+flowchart TB
+  U(["Usuario - consola"])
+  subgraph CLI["Capa CLI"]
+    SH["Cli.Shell"] --> PA["Cli.Parser"]
+    SH --> CO["Cli.Comandos"]
+    CO --> FO["Cli.Formato"]
+  end
+  subgraph SERV["Capa Servicios - orquestacion"]
+    AS["Servicios.Asignador"]
+    RE["Servicios.Resumen"]
+  end
+  subgraph PROC["Capa Procesos - GenServer y procesos puros"]
+    US["UsuarioServer"]
+    ZO["ZonaServer"]
+    NE["NecesidadServer"]
+    PE["PersonaServer"]
+    MA["MascotaServer"]
+    RS["RecursoServer x N"]
+    AL["AlbergueServer x N"]
+    BI["Procesos.Bitacora"]
+  end
+  subgraph DOM["Capa Dominio - funciones puras"]
+    D1["Usuario, Permisos, Validaciones, Estados"]
+    D2["Zona, Sector, PuntoAtencion"]
+    D3["Necesidad, Recurso, Movimiento"]
+    D4["Persona, Mensaje, Mascota, Similitud"]
+    D5["Albergue, Estadisticas"]
+  end
+  subgraph PER["Capa Persistencia"]
+    AM["Almacen"] --> CD["Codec"]
+    AM --> ES["Escritor"]
+    RT["Restaurador"] --> AM
+  end
+  FS[("data/*.txt y actividad.log")]
+  U --> SH
+  CO --> AS
+  CO --> RE
+  CO --> PROC
+  AS --> NE
+  AS --> RS
+  RE --> PROC
+  PROC --> DOM
+  PROC --> AM
+  BI --> FS
+  ES --> FS
+  AM --> FS

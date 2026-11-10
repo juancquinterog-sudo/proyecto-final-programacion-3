@@ -1,0 +1,33 @@
+flowchart TD
+  APP["Emergencias.Application"]
+  SUP["Emergencias.Supervisor<br/>one_for_one"]
+  APP --> SUP
+  SUP --> ESC["Persistencia.Escritor<br/>GenServer"]
+  SUP --> REG["Registry<br/>Emergencias.Registry"]
+  SUP --> BIT["Procesos.Bitacora<br/>proceso puro spawn_link"]
+  SUP --> TS["Task.Supervisor<br/>TareaSupervisor"]
+  SUP --> SSV["Supervisores.Servidores<br/>one_for_one"]
+  SUP --> SRE["Supervisores.Recursos<br/>rest_for_one"]
+  SUP --> SAL["Supervisores.Albergues<br/>rest_for_one"]
+  SSV --> US["UsuarioServer"]
+  SSV --> ZS["ZonaServer"]
+  SSV --> NS["NecesidadServer"]
+  SSV --> PS["PersonaServer"]
+  SSV --> MS["MascotaServer"]
+  SRE --> DR["DynamicSupervisor<br/>RecursoDinamico"]
+  SRE --> RR["Restaurador :recursos<br/>Task transient"]
+  DR --> R1["RecursoServer R001"]
+  DR --> R2["RecursoServer R002"]
+  DR --> RN["RecursoServer ..."]
+  SAL --> DA["DynamicSupervisor<br/>AlbergueDinamico"]
+  SAL --> RA["Restaurador :albergues<br/>Task transient"]
+  DA --> A1["AlbergueServer A01"]
+  DA --> A2["AlbergueServer A02"]
+  DA --> AN["AlbergueServer ..."]
+  TS -.-> T1["Tasks temporales<br/>demo y consultas en paralelo"]
+  classDef sup fill:#dbeafe,stroke:#1d4ed8,color:#0f172a;
+  classDef gs fill:#dcfce7,stroke:#15803d,color:#0f172a;
+  classDef pr fill:#fef3c7,stroke:#b45309,color:#0f172a;
+  class SUP,SSV,SRE,SAL,DR,DA,TS sup;
+  class ESC,US,ZS,NS,PS,MS,R1,R2,RN,A1,A2,AN gs;
+  class BIT,RR,RA,T1,REG pr;
