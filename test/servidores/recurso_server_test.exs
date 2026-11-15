@@ -5,10 +5,11 @@ defmodule Emergencias.Servidores.RecursoServerTest do
 
   test "iniciar y operar servidor de recurso" do
     recurso = %Recurso{
-      codigo: "R01",  # Usamos :codigo en lugar de :id
+      codigo: "R01",
       nombre: "Agua Potable",
-      cantidad: 100,
-      zona: "Z01"
+      zona: "Z01",
+      categoria: :viveres, # Campo obligatorio requerido por la struct
+      unidad: :litros      # Campo obligatorio requerido por la struct
     }
 
     case RecursoServer.start_link(recurso) do
