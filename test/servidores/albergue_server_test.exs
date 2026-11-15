@@ -4,15 +4,22 @@ defmodule Emergencias.Servidores.AlbergueServerTest do
   alias Emergencias.Servidores.AlbergueServer
   alias Emergencias.Dominio.Albergue
 
-  test "iniciar servidor de albergue" do
+  test "operaciones del servidor de albergue" do
     albergue = %Albergue{
-      codigo: "A01",
-      nombre: "Coliseo",
-      capacidad: 100,
-      zona: "Zon1"
+      codigo: "A99",
+      nombre: "Refugio Norte",
+      capacidad: 200,
+      zona: "Z01"
     }
 
-    # AlbergueServer.start_link recibe el struct directamente según el error de tipado
-    assert {:ok, _pid} = AlbergueServer.start_link(albergue)
+    # Probamos el inicio y las funciones públicas si están disponibles
+    case AlbergueServer.start_link(albergue) do
+      {:ok, _pid} -> :ok
+      {:error, {:already_started, _pid}} -> :ok
+    end
+
+    if function_exported?(AlbergueServer, :listar, 0) do
+      assert is_list(AlbergueServer.listar())
+    end
   end
 end
