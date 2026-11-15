@@ -5,7 +5,7 @@ defmodule Emergencias.Servidores.RecursoServerTest do
 
   test "iniciar y operar servidor de recurso" do
     recurso = %Recurso{
-      id: "R01",
+      codigo: "R01",  # Usamos :codigo en lugar de :id
       nombre: "Agua Potable",
       cantidad: 100,
       zona: "Z01"
