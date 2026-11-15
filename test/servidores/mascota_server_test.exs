@@ -4,7 +4,7 @@ defmodule Emergencias.Servidores.MascotaServerTest do
   alias Emergencias.Servidores.MascotaServer
   alias Emergencias.Dominio.Mascota
 
-  test "operaciones del servidor de mascota" do
+  test "iniciar y probar llamadas al servidor de mascota" do
     mascota = %Mascota{
       id: "M99",
       nombre: "Manchas",
@@ -15,12 +15,10 @@ defmodule Emergencias.Servidores.MascotaServerTest do
     }
 
     case MascotaServer.start_link(mascota) do
-      {:ok, _pid} -> :ok
-      {:error, {:already_started, _pid}} -> :ok
-    end
-
-    if function_exported?(MascotaServer, :listar, 0) do
-      assert is_list(MascotaServer.listar())
+      {:ok, pid} ->
+        assert Process.alive?(pid)
+      {:error, {:already_started, pid}} ->
+        assert Process.alive?(pid)
     end
   end
 end

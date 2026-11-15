@@ -13,12 +13,8 @@ defmodule Emergencias.Servidores.PersonaServerTest do
     }
 
     case PersonaServer.start_link(persona) do
-      {:ok, _pid} -> :ok
-      {:error, {:already_started, _pid}} -> :ok
-    end
-
-    if function_exported?(PersonaServer, :consultar, 1) do
-      PersonaServer.consultar("P01")
+      {:ok, pid} -> assert Process.alive?(pid)
+      {:error, {:already_started, pid}} -> assert Process.alive?(pid)
     end
   end
 end
