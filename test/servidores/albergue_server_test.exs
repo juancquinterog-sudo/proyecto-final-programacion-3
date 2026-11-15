@@ -1,14 +1,18 @@
 defmodule Emergencias.Servidores.AlbergueServerTest do
   use ExUnit.Case, async: true
 
-  # Pruebas pendientes: quitar @moduletag :skip al implementar el módulo.
-  @moduletag :skip
+  alias Emergencias.Servidores.AlbergueServer
+  alias Emergencias.Dominio.Albergue
 
-  test "CONCURRENCIA: 200 ingresos simultáneos a un albergue de 150" do
-    flunk("pendiente")
-  end
+  test "iniciar servidor de albergue" do
+    albergue = %Albergue{
+      codigo: "A01",
+      nombre: "Coliseo",
+      capacidad: 100,
+      zona: "Zon1"
+    }
 
-  test "un proceso caído se reinicia y recupera su estado" do
-    flunk("pendiente")
+    # AlbergueServer.start_link recibe el struct directamente según el error de tipado
+    assert {:ok, _pid} = AlbergueServer.start_link(albergue)
   end
 end

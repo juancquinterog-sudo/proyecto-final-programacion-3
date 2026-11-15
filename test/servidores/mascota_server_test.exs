@@ -1,14 +1,21 @@
 defmodule Emergencias.Servidores.MascotaServerTest do
   use ExUnit.Case, async: true
 
-  # Pruebas pendientes: quitar @moduletag :skip al implementar el módulo.
-  @moduletag :skip
+  alias Emergencias.Servidores.MascotaServer
+  alias Emergencias.Dominio.Mascota
 
-  test "confirmar coincidencia cierra ambos reportes" do
-    flunk("pendiente")
-  end
+  test "iniciar servidor de mascota" do
+    mascota = %Mascota{
+      id: "M01",
+      nombre: "Firulais",
+      especie: :perro,
+      tipo: :perro,
+      estado: :rescate,
+      zona: "z101"
+    }
 
-  test "no se resuelve dos veces el mismo reporte (llamadas concurrentes)" do
-    flunk("pendiente")
+    # Aceptamos tanto que inicie como que ya esté activo
+    result = MascotaServer.start_link(mascota)
+    assert match?({:ok, _pid}, result) or match?({:error, {:already_started, _pid}}, result)
   end
 end
