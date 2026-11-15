@@ -1,14 +1,27 @@
 defmodule Emergencias.Persistencia.AlmacenTest do
-  # No async: todas las pruebas comparten la carpeta de datos de prueba.
+  # No async: todas las pruebas comparten la carpeta de datos de prueba configurada por la aplicación.
   use ExUnit.Case, async: false
 
   alias Emergencias.Dominio.{PuntoAtencion, Sector, Usuario, Zona}
   alias Emergencias.Persistencia.Almacen
 
   setup do
-    dir = Application.fetch_env!(:emergencias, :data_dir)
-    File.rm_rf!(dir)
-    on_exit(fn -> File.rm_rf(dir) end)
+    # Crear un directorio temporal completamente único para esta prueba específica
+    unique_id = System.unique_integer([:positive])
+    test_dir = Path.join(["tmp", "test_data_almacen_#{unique_id}"])
+
+    # Sobrescribir temporalmente la configuración de la aplicación para que apunte a este directorio único
+    original_dir = Application.get_env(:emergencias, :data_dir)
+    Application.put_env(:emergencias, :data_dir, test_dir)
+
+    File.rm_rf!(test_dir)
+    File.mkdir_p!(test_dir)
+
+    on_exit(fn ->
+      File.rm_rf!(test_dir)
+      if original_dir, do: Application.put_env(:emergencias, :data_dir, original_dir)
+    end)
+
     :ok
   end
 
