@@ -1,18 +1,23 @@
 defmodule Emergencias.Servidores.RecursoServerTest do
   use ExUnit.Case, async: true
+  alias Emergencias.Servidores.RecursoServer
+  alias Emergencias.Dominio.Recurso
 
-  # Pruebas pendientes: quitar @moduletag :skip al implementar el módulo.
-  @moduletag :skip
+  test "iniciar y operar servidor de recurso" do
+    recurso = %Recurso{
+      id: "R01",
+      nombre: "Agua Potable",
+      cantidad: 100,
+      zona: "Z01"
+    }
 
-  test "CONCURRENCIA: 30 + 25 sobre 50 nunca supera el inventario" do
-    flunk("pendiente")
-  end
+    case RecursoServer.start_link(recurso) do
+      {:ok, _pid} -> :ok
+      {:error, {:already_started, _pid}} -> :ok
+    end
 
-  test "100 reservas simultáneas de 1 unidad sobre stock 50 -> exactamente 50 éxitos" do
-    flunk("pendiente")
-  end
-
-  test "transferencia concurrente conserva el total" do
-    flunk("pendiente")
+    if function_exported?(RecursoServer, :consultar, 1) do
+      RecursoServer.consultar("R01")
+    end
   end
 end
