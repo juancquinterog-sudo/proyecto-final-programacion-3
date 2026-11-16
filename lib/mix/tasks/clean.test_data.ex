@@ -1,11 +1,16 @@
 defmodule Mix.Tasks.Clean.TestData do
   use Mix.Task
 
-  @shortdoc "Limpia los datos de prueba"
+  @shortdoc "Limpia la carpeta de datos de prueba temporal"
 
-  @impl true
   def run(_args) do
-    File.rm_rf!("tmp/test_data")
-    Mix.shell().info("Datos de prueba limpiados.")
+    dir = "tmp/test_data"
+
+    case File.rm_rf(dir) do
+      {:ok, _files} ->
+        IO.puts("Carpeta de pruebas #{dir} limpiada exitosamente.")
+      {:error, reason, file} ->
+        IO.puts("No se pudo limpiar completamente #{file}: #{reason} (continuando de todos modos).")
+    end
   end
 end
