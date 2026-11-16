@@ -1,0 +1,9 @@
+/_build/
+/deps/
+/tmp/
+*.beam
+erl_crash.dump
+/data/*.txt
+/data/*.log
+!/data/.gitkeep
+.DS_Store

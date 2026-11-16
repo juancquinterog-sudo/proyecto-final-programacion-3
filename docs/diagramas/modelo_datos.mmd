@@ -1,0 +1,106 @@
+erDiagram
+  USUARIO {
+    string nombre_usuario PK
+    string hash_contrasena
+    string nombre_completo
+    atom tipo
+    string zona FK
+  }
+  ZONA {
+    string codigo PK
+    string nombre
+    atom nivel
+    int personas_estimadas
+  }
+  SECTOR {
+    string codigo PK
+    string zona FK
+    string nombre
+    atom nivel
+    int personas_estimadas
+  }
+  PUNTO_ATENCION {
+    string codigo PK
+    string sector FK
+    string nombre
+    int personas_estimadas
+  }
+  NECESIDAD {
+    string id PK
+    atom tipo
+    string descripcion
+    int cantidad
+    int cantidad_asignada
+    string zona FK
+    atom prioridad
+    string reportado_por FK
+    atom estado
+  }
+  RECURSO {
+    string codigo PK
+    string nombre
+    atom categoria
+    string unidad
+    string zona FK
+    map existencias
+  }
+  MOVIMIENTO {
+    string codigo_recurso FK
+    atom tipo
+    int cantidad
+    string ubicacion
+    string referencia
+    string usuario FK
+    datetime fecha
+  }
+  PERSONA {
+    string documento PK
+    string nombre
+    int edad
+    string zona FK
+    atom estado
+    string albergue FK
+    list historial
+  }
+  MENSAJE {
+    string id PK
+    string destinatario FK
+    string remitente FK
+    string contenido
+    datetime fecha
+    atom estado
+  }
+  MASCOTA {
+    string id PK
+    atom tipo
+    string especie
+    string nombre
+    string color
+    atom tamano
+    set caracteristicas
+    string zona FK
+    string contacto
+    atom estado
+    string pareja_id FK
+  }
+  ALBERGUE {
+    string codigo PK
+    string nombre
+    string zona FK
+    int capacidad
+    set ocupantes
+  }
+  ZONA ||--o{ SECTOR : contiene
+  SECTOR ||--o{ PUNTO_ATENCION : contiene
+  ZONA ||--o{ NECESIDAD : tiene
+  ZONA ||--o{ RECURSO : ubica
+  ZONA ||--o{ ALBERGUE : aloja
+  ZONA ||--o{ PERSONA : reside
+  ZONA ||--o{ MASCOTA : reporta
+  USUARIO ||--o{ NECESIDAD : reporta
+  USUARIO ||--o{ MENSAJE : envia
+  RECURSO ||--o{ MOVIMIENTO : registra
+  NECESIDAD }o--o{ RECURSO : asignacion
+  ALBERGUE ||--o{ PERSONA : ocupa
+  PERSONA ||--o{ MENSAJE : recibe
+  MASCOTA |o--o| MASCOTA : coincidencia
